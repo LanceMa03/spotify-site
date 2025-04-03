@@ -1,103 +1,119 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+export default function Home() {
+  const [currentTrack, setCurrentTrack] = useState("");
+  const [currentArtist, setCurrentArtist] = useState("");
+  const [albumArt, setAlbumArt] = useState("");
+  const [lastUpdated, setLastUpdated] = useState(0);
+
+  // gets the access token using the refresh token
+  // allows it to make API calls to SpotifyAPI
+  const getAccessToken = async () => {
+
+    try {
+      const response = await axios.get("/api/token")
+      return response.data.access_token;
+
+    } catch (error) {
+      console.error("Error fetching access token:", error);
+    }
+  };
+
+
+  const fetchAccessToken = async () => {
+    const token = await getAccessToken();
+
+    if (token) {
+      
+      try {
+        
+        const response = await axios.get(`/api/spotifyData?token=${token}`)
+        setCurrentTrack(response.data.item.name);
+
+        let artistString = response.data.item.artists;
+        const finalArtistStr = artistString.map((artist: { name: string }) => artist.name).join(", ");
+        setCurrentArtist(finalArtistStr);
+
+        setAlbumArt(response.data.item.album.images[0].url);
+        return "good";
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+
+      
+    }
+  };
+
+
+
+  /* tries to get the current track every 10 seconds */
+  useEffect(() => {
+
+    const intervalId = setInterval(() => {
+      if (lastUpdated === 5) {
+
+        fetchAccessToken().then((returnVal) => {
+          if (returnVal === "good") {
+            setLastUpdated(0);
+          }
+        });
+
+      } else {
+        setLastUpdated(lastUpdated + 1);
+      }
+
+      return clearInterval(intervalId);
+    }, 1000);
+
+  });
+
+
+  return (
+    <div className="grid min-h-screen justify-center place-items-center bg-gray-100 relative px-4 py-7">
+
+      <a className="absolute top-2 left-2 w-fit bg-zinc-800 text-sm text-gray-50 px-3 py-1 rounded-lg shadow-md hover:bg-zinc-700 transition " href="https://website-next-seven-theta.vercel.app/#aboutme">
+        ← Back
+      </a>
+
+      <div className="flex flex-col items-center gap-2 -mt-15">
+        <div className="w-[250px] h-[250px] mb-10">
+          <a href="https://open.spotify.com/user/konsama17" target="_blank">
+            <Image src="/pfp.jpg" alt="spotify pfp" width={250} height={250} className="rounded-full object-cover w-full h-full shadow-lg"/>
           </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+           
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+
+        {currentTrack && (
+          <div className="w-full flex text-sm justify-left text-left font-bold text-zinc-800">
+          Currently Playing:
+          </div>
+        )}
+        
+        <div className="flex items-center gap-4 w-full max-w-xl bg-zinc-900 text-white p-4 rounded-xl shadow-md">
+          {currentTrack && <Image src={albumArt} width={64} height={64} alt="album art" className="rounded-lg"></Image>}
+        
+          <div className="flex flex-col">
+            <span className="text-base font-semibold">
+              {currentTrack || "Not currently playing anything"}
+            </span>
+            <span className="text-sm mt-0.5 text-zinc-400">{currentArtist} </span>
+          </div>
+          
+        </div>
+      </div>
+      
+      <div className="absolute bottom-1 text-sm text-zinc-500 ">Last Updated: {lastUpdated} seconds ago</div>
+
+
     </div>
+
+    
   );
 }

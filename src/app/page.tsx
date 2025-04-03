@@ -25,7 +25,7 @@ export default function Home() {
   };
 
 
-  const fetchAccessToken = async () => {
+  const fetchSpotifyData = async () => {
     const token = await getAccessToken();
 
     if (token) {
@@ -58,7 +58,7 @@ export default function Home() {
     const intervalId = setInterval(() => {
       if (lastUpdated === 5) {
 
-        fetchAccessToken().then((returnVal) => {
+        fetchSpotifyData().then((returnVal) => {
           if (returnVal === "good") {
             setLastUpdated(0);
           }
@@ -75,7 +75,7 @@ export default function Home() {
 
 
   return (
-    <div className="grid min-h-screen justify-center place-items-center bg-gray-100 relative px-4 py-7">
+    <div className="grid min-h-screen justify-center place-items-center bg-grey-900 relative px-4 py-7">
 
       <a className="absolute top-2 left-2 w-fit bg-zinc-800 text-sm text-gray-50 px-3 py-1 rounded-lg shadow-md hover:bg-zinc-700 transition " href="https://website-next-seven-theta.vercel.app/#aboutme">
         ← Back
@@ -91,12 +91,12 @@ export default function Home() {
 
 
         {currentTrack && (
-          <div className="w-full flex text-sm justify-left text-left font-bold text-zinc-800">
+          <div className="w-full flex text-sm justify-left text-left font-bold text-zinc-100">
           Currently Playing:
           </div>
         )}
         
-        <div className="flex items-center gap-4 w-full max-w-xl bg-zinc-900 text-white p-4 rounded-xl shadow-md">
+        <div className="flex items-center gap-4 w-full max-w-xl bg-neutral-700 text-white p-4 rounded-xl shadow-md">
           {currentTrack && <Image src={albumArt} width={64} height={64} alt="album art" className="rounded-lg"></Image>}
         
           <div className="flex flex-col">

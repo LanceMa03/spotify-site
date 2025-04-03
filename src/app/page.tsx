@@ -44,6 +44,7 @@ export default function Home() {
         
       } catch (error) {
         console.error("Error fetching data:", error);
+        return "bad"
       }
 
       
@@ -51,27 +52,44 @@ export default function Home() {
   };
 
 
-
-  /* tries to get the current track every 10 seconds */
+  // Increments lastUpdate by 1 every second
   useEffect(() => {
-
     const intervalId = setInterval(() => {
-      if (lastUpdated === 5) {
-
-        fetchSpotifyData().then((returnVal) => {
-          if (returnVal === "good") {
-            setLastUpdated(0);
-          }
-        });
-
-      } else {
-        setLastUpdated(lastUpdated + 1);
-      }
-
-      return clearInterval(intervalId);
+      setLastUpdated((prev) => prev + 1);
     }, 1000);
 
-  });
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Triggers every lastUpdate changes
+  useEffect(() => {
+
+    // fetch the latest data from Spotify API every 5 seconds
+    if (lastUpdated === 10) {
+      fetchSpotifyData().then((returnVal) => {
+        if (returnVal === "good") {
+          setLastUpdated(0); // Reset counter only if successful
+        }
+        else if (returnVal === "bad") {
+          setLastUpdated(0); 
+          setAlbumArt("");
+          setCurrentTrack("");
+          setCurrentArtist("");
+        }
+      });
+    }
+  }, [lastUpdated]);
+
+  // inital render/fetch
+  useEffect(() => {
+
+    fetchSpotifyData()
+      .then((returnVal) => {
+        if (returnVal === "good") {
+          setLastUpdated(0);
+        }
+      });
+  }, []);
 
 
   return (

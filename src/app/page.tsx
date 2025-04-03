@@ -35,7 +35,7 @@ export default function Home() {
         const response = await axios.get(`/api/spotifyData?token=${token}`)
         setCurrentTrack(response.data.item.name);
 
-        let artistString = response.data.item.artists;
+        const artistString = response.data.item.artists;
         const finalArtistStr = artistString.map((artist: { name: string }) => artist.name).join(", ");
         setCurrentArtist(finalArtistStr);
 

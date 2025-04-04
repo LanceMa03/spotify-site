@@ -95,7 +95,7 @@ export default function Home() {
   return (
     <div className="grid min-h-screen justify-center place-items-center bg-grey-900 relative px-4 py-7">
 
-      <a className="absolute top-2 left-2 w-fit bg-zinc-800 text-sm text-gray-50 px-3 py-1 rounded-lg shadow-md hover:bg-zinc-700 transition " href="https://website-next-seven-theta.vercel.app/#aboutme">
+      <a className="absolute top-2 left-2 w-fit bg-zinc-800 text-sm text-gray-50 px-3 py-1 rounded-lg shadow-md hover:bg-zinc-700 transition " href="https://lance-ma-website.vercel.app//#aboutme">
         ← Back
       </a>
 

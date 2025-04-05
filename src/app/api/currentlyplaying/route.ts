@@ -7,10 +7,10 @@ export async function GET( req: NextRequest) {
 
         const token = req.nextUrl.searchParams.get("token");;
       
-       const data = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-        headers: {
-            Authorization: `Bearer ` + token,
-        },
+        const data = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+            headers: {
+                Authorization: `Bearer ` + token,
+            },
         });
         const response = await data.json();
         return NextResponse.json(response, {status: 200});

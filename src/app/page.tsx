@@ -89,11 +89,21 @@ export default function Home() {
     if (lastUpdated === 10) {
       fetchCurrentlyPlaying().then((returnVal) => {
         if (returnVal === "good") {
-          setLastUpdated(0); // Reset counter only if successful
+          setIsPlaying(true);
+          setLastUpdated(0); // Reset counter after successful fetch
         }
         else if (returnVal === "bad") {
-          fetchLastPlayed()
+          setIsPlaying(false);
+
+          fetchLastPlayed().then((returnVal) => {
+            if (returnVal === "good") {
+              setLastUpdated(0);
+            }
+          })
+
+           
         }
+
       });
     }
   }, [lastUpdated]);
